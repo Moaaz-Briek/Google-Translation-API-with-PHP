@@ -1,0 +1,37 @@
+function doPost(e) {
+  var error = null;
+
+  if (typeof e.parameter.source_language == 'undefined') {
+    error = 'Source Language is required';
+  } else if(typeof e.parameter.target_language == '') {
+    error = 'Target Language is required';
+  } else if(typeof e.parameter.input == '') {
+    error = 'Input Text is required';
+  } else {
+    var source_language = e.parameter.source_language.trim();
+    var target_language = e.parameter.target_language.trim();
+    var input = e.parameter.input.trim();
+    if (source_language == 'auto') {
+      source_language = ''; //Empty value is auto dettected
+    }
+  }
+
+  try {
+    var translate = LanguageApp.translate(input, source_language, target_language);
+  } catch(err) {
+    error = err.message
+  }
+
+  if(error == null) {
+    var result = JSON.stringify({
+      'status': "success",
+      'TranslatedText': translate
+      });
+  } else {
+    var result = JSON.stringify({
+      'status': "error",
+      'message': error
+      });
+  }
+  return ContentService.createTextOutput(result);
+}
